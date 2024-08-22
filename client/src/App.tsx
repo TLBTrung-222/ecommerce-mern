@@ -7,7 +7,7 @@ import { CssBaseline } from "@mui/material";
 const App = () => (
     <>
         <CssBaseline>
-            <Box className="App" sx={{ margin: 0, padding: 0 }}>
+            <Box className="App">
                 <Router>
                     <Routes>
                         {routes.map((route) => (
