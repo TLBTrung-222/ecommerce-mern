@@ -3,6 +3,7 @@ import Box from "@mui/system/Box";
 import PersonOutlineIcon from "@mui/icons-material/PersonOutline";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import InputSearch from "../InputSearch/InputSearch";
+import Badge from "@mui/material/Badge";
 
 function Header() {
     return (
@@ -31,7 +32,10 @@ function Header() {
 
             {/* Card */}
             <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                <ShoppingCartIcon />
+                <Badge badgeContent={4} color="secondary">
+                    <ShoppingCartIcon />
+                </Badge>
+
                 <Typography>Giỏ hàng</Typography>
             </Box>
         </Box>

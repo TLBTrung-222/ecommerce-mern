@@ -10,7 +10,7 @@ function CardComponent() {
     const [value, setValue] = React.useState<number | null>(2);
 
     return (
-        <Card sx={{ maxWidth: 345 }}>
+        <Card sx={{ maxWidth: "250px" }}>
             <CardMedia
                 sx={{
                     height: 250,
