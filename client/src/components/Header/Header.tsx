@@ -4,6 +4,7 @@ import PersonOutlineIcon from "@mui/icons-material/PersonOutline";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import InputSearch from "../InputSearch/InputSearch";
 import Badge from "@mui/material/Badge";
+import { Link } from "react-router-dom"; // Import Link component
 
 function Header() {
     return (
@@ -18,7 +19,11 @@ function Header() {
             }}
         >
             {/* Shop logo + name */}
-            <Typography sx={{ fontWeight: "bold" }}>TRUNG'S SHOP</Typography>
+            <Link to="/" style={{ textDecoration: "none", color: "inherit" }}>
+                <Typography sx={{ fontWeight: "bold" }}>
+                    TRUNG'S SHOP
+                </Typography>
+            </Link>
 
             {/* Search field + Account */}
             <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>

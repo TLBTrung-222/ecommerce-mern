@@ -6,6 +6,7 @@ import NotFoundPage from "../pages/NotFoundPage/NotFoundPage";
 import TypeProductPage from "~/pages/TypeProductPage/TypeProductPage";
 import SignInPage from "~/pages/SignInPage/SignInPage";
 import SignUpPage from "~/pages/SignUpPage/SignUpPage";
+import ProductDetailPage from "~/pages/ProductDetailPage/ProductDetailPage";
 
 interface IRoute {
     path: string;
@@ -30,6 +31,12 @@ export const routes: IRoute[] = [
     {
         path: "/product",
         page: ProductPage,
+        isShowHeader: true,
+        isPrivated: false,
+    },
+    {
+        path: "/product-detail",
+        page: ProductDetailPage,
         isShowHeader: true,
         isPrivated: false,
     },

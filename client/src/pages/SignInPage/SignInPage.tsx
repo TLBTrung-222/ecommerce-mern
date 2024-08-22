@@ -13,24 +13,6 @@ import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 
-function Copyright(props: any) {
-    return (
-        <Typography
-            variant="body2"
-            color="text.secondary"
-            align="center"
-            {...props}
-        >
-            {"Copyright © "}
-            <Link color="inherit" href="https://mui.com/">
-                Your Website
-            </Link>{" "}
-            {new Date().getFullYear()}
-            {"."}
-        </Typography>
-    );
-}
-
 // TODO remove, this demo shouldn't need to reset the theme.
 const defaultTheme = createTheme();
 
@@ -60,7 +42,7 @@ export default function SignInPage() {
                         <LockOutlinedIcon />
                     </Avatar>
                     <Typography component="h1" variant="h5">
-                        Sign in
+                        Đăng nhập
                     </Typography>
                     <Box
                         component="form"
@@ -73,7 +55,7 @@ export default function SignInPage() {
                             required
                             fullWidth
                             id="email"
-                            label="Email Address"
+                            label="Địa chỉ email"
                             name="email"
                             autoComplete="email"
                             autoFocus
@@ -83,7 +65,7 @@ export default function SignInPage() {
                             required
                             fullWidth
                             name="password"
-                            label="Password"
+                            label="Mật khẩu"
                             type="password"
                             id="password"
                             autoComplete="current-password"
@@ -100,23 +82,22 @@ export default function SignInPage() {
                             variant="contained"
                             sx={{ mt: 3, mb: 2 }}
                         >
-                            Sign In
+                            Đăng nhập
                         </Button>
                         <Grid container>
                             <Grid item xs>
                                 <Link href="#" variant="body2">
-                                    Forgot password?
+                                    Quên mật khẩu?
                                 </Link>
                             </Grid>
                             <Grid item>
                                 <Link href="/sign-up" variant="body2">
-                                    {"Don't have an account? Sign Up"}
+                                    {"Chưa có tài khoản? Đăng kí"}
                                 </Link>
                             </Grid>
                         </Grid>
                     </Box>
                 </Box>
-                <Copyright sx={{ mt: 8, mb: 4 }} />
             </Container>
         </ThemeProvider>
     );
