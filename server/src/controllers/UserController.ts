@@ -55,7 +55,7 @@ export const updateUser: Controller<UserUpdate> = async (req, res, next) => {
         // validate properties in data and modify user
         for (const key in data) {
             if (key === 'name') user[key] = data[key] as string
-            else if (key === 'phone') user[key] = data[key] as number
+            else if (key === 'phone') user[key] = data[key] as string
             else if (key === 'address') user[key] = data[key] as string
             else if (key === 'city') user[key] = data[key] as string
             else if (key === 'avatar') user[key] = data[key] as string
@@ -69,7 +69,7 @@ export const updateUser: Controller<UserUpdate> = async (req, res, next) => {
 
         // call service to update user
         const updatedUser = await UserService.updateUser(user)
-        res.json({ msg: 'it works', updatedUser })
+        res.status(200).json({ message: 'updated user succesfully!', updatedUser })
     } catch (error) {
         return next(new AppError(`${(error as Error).message}`, 400))
     }

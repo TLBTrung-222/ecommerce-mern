@@ -8,7 +8,7 @@ CREATE TABLE users (
     pw_hash VARCHAR(255) NOT NULL,
     pw_salt VARCHAR(255) NOT NULL,
     is_admin BOOLEAN NOT NULL DEFAULT false,
-    phone BIGINT,
+    phone VARCHAR(32),
     address VARCHAR(255),
     avatar VARCHAR(255),
     city VARCHAR(255),
@@ -67,13 +67,13 @@ CREATE TABLE shipping_addresses (
     full_name VARCHAR(255) NOT NULL,
     address VARCHAR(255) NOT NULL,
     city VARCHAR(255) NOT NULL,
-    phone BIGINT NOT NULL
+    phone VARCHAR(32) NOT NULL
 );
 
 -- Sample Data Insertion for Users Table
 INSERT INTO users (name, email, pw_hash, pw_salt, is_admin, phone, address, avatar, city) VALUES 
-('Alice Smith', 'alice@example.com', 'hashed_password_1', 'salt_1', false, 1234567890, '123 Main St', 'avatar1.png', 'New York'),
-('Bob Johnson', 'bob@example.com', 'hashed_password_2', 'salt_2', true, 9876543210, '456 Elm St', 'avatar2.png', 'San Francisco');
+('Alice Smith', 'alice@example.com', 'hashed_password_1', 'salt_1', false, '1234567890', '123 Main St', 'avatar1.png', 'New York'),
+('Bob Johnson', 'bob@example.com', 'hashed_password_2', 'salt_2', true, '9876543210', '456 Elm St', 'avatar2.png', 'San Francisco');
 
 -- Sample Data Insertion for Products Table
 INSERT INTO products (name, image, type, price, count_in_stock, rating, description, discount, selled) VALUES 
@@ -92,5 +92,5 @@ INSERT INTO order_items (order_id, product_id, name, amount, image, price, disco
 
 -- Sample Data Insertion for Shipping Addresses Table
 INSERT INTO shipping_addresses (order_id, full_name, address, city, phone) VALUES 
-(1, 'Alice Smith', '123 Main St', 'New York', 1234567890),
-(2, 'Bob Johnson', '456 Elm St', 'San Francisco', 9876543210);
+(1, 'Alice Smith', '123 Main St', 'New York', '1234567890'),
+(2, 'Bob Johnson', '456 Elm St', 'San Francisco', '9876543210');

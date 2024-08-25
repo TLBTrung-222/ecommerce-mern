@@ -14,7 +14,7 @@ export interface SignInForm {
 export interface UpdateForm {
     name?: string
     password?: string
-    phone?: number
+    phone?: string
     address?: string
     avatar?: string
     city?: string

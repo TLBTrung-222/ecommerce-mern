@@ -4,7 +4,7 @@ const UserRouter = Router()
 
 /**
  * @swagger
- * /sign-up:
+ * /user/sign-up:
  *   post:
  *     summary: Create a new user
  *     tags:
@@ -14,18 +14,18 @@ const UserRouter = Router()
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/User'
+ *             $ref: '#/components/schemas/UserSignUp'
  *     responses:
  *       201:
  *         description: User created successfully
- *       400:
+ *       401:
  *         description: Bad request
  */
 UserRouter.post('/sign-up', UserController.createUser)
 
 /**
  * @swagger
- * /sign-in:
+ * /user/sign-in:
  *   post:
  *     summary: Log in a user
  *     tags:
@@ -39,19 +39,44 @@ UserRouter.post('/sign-up', UserController.createUser)
  *     responses:
  *       200:
  *         description: User logged in successfully
- *       401:
+ *       400:
  *         description: Unauthorized
  */
 UserRouter.post('/sign-in', UserController.logInUser)
 
 /**
  * @swagger
- * /update-user/{id}:
- *      tags:
- *          - User
- *      parameters:
- *          -
- *
+ * /user/update-user/{id}:
+ *   put:
+ *     summary: Update a user by ID
+ *     tags:
+ *       - User
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: The ID of the user to update
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/UserUpdate'
+ *     responses:
+ *       200:
+ *         description: User updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/User'
+ *       400:
+ *         description: Bad request
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
  */
 UserRouter.put('/update-user/:id', UserController.updateUser)
 

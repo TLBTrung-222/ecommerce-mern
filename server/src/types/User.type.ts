@@ -7,7 +7,7 @@ export interface UserData {
     pw_hash: string
     pw_salt: string
     is_admin: boolean
-    phone?: number
+    phone?: string
     address?: string
     avatar?: string
     city?: string
@@ -26,7 +26,7 @@ export interface UserWithHashedPassword {
 export interface UserUpdateBody {
     name?: string
     password?: string
-    phone?: number
+    phone?: string
     address?: string
     avatar?: string
     city?: string

@@ -10,5 +10,5 @@ export const swaggerDefinition: swaggerJSDoc.OAS3Definition = {
         description: ' API doc for the PERN stack e-commerce application'
     },
 
-    servers: [{ url: 'http://localhost:3001/', description: 'local server' }]
+    servers: [{ url: 'http://localhost:3001/api', description: 'local server' }]
 }

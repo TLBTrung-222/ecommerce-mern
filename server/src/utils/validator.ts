@@ -12,7 +12,8 @@ export const isEmpty = (value: string): boolean => !value.trim().length
 export const validateSignUpData = (formData: SignUpForm) => {
     const { name, email, password, confirmPassword } = formData
 
-    if (!name || !email || !password || !confirmPassword) return 'All field is required'
+    if (!name || !email || !password || !confirmPassword)
+        return 'All field (name, email, password, confirmPassword) is required'
 
     if (containEmptyField(formData)) return 'Contains empty field'
 
