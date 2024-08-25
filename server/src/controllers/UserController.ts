@@ -1,10 +1,10 @@
 import { Controller } from '../types/ControllerFunc.type'
 import * as UserService from '../services/UserService'
-import * as JwtService from '../services/JwtService'
 import { SignInForm, SignUpForm } from '../types/UserRequest.type'
-import { validateSignUpData } from '../utils/validator'
+import { validateSignInData, validateSignUpData, validateUpdateData } from '../utils/validator'
 import { AppError } from '../utils/AppError'
-import { comparePassword } from '../utils/password'
+import { UserUpdate } from '../types/User.type'
+import { hashedPassword } from '../utils/password'
 
 export const createUser: Controller = async (req, res, next) => {
     try {
@@ -27,22 +27,49 @@ export const createUser: Controller = async (req, res, next) => {
 export const logInUser: Controller = async (req, res, next) => {
     try {
         const body: SignInForm = req.body
-        const { email, password } = body
 
-        // get the user in db
-        const user = await UserService.getUserByEmail(email)
-        if (!user) return next(new AppError('Email not exist', 400))
+        // validate user input
+        const validationError = validateSignInData(body)
+        if (validationError) return next(new AppError(validationError, 400)) // 400: Bad Request
 
-        // compare password
-        const correctPassword = await comparePassword(password, user.pw_hash)
-        if (!correctPassword) return next(new AppError('Incorrect password', 400))
+        const { accessToken, refreshToken } = await UserService.logInUser(body)
 
-        // return jwt token to user
-        // jwt token payload = id + isAdmin from user
-        const payload = { id: user.id, isAdmin: user.is_admin }
-        const accessToken = JwtService.generalAccessToken(payload)
-        const refreshToken = JwtService.generalRefreshToken(payload)
         res.status(200).json({ message: 'correct password', accessToken, refreshToken })
+    } catch (error) {
+        return next(new AppError(`${(error as Error).message}`, 400))
+    }
+}
+
+export const updateUser: Controller<UserUpdate> = async (req, res, next) => {
+    try {
+        const userId = req.params.id
+        const data = req.body
+
+        // validate input
+        const validationError = validateUpdateData(data)
+        if (validationError) return next(new AppError(validationError, 400)) // 400: Bad Request
+
+        // validate id
+        const user = await UserService.getUserById(userId)
+
+        // validate properties in data and modify user
+        for (const key in data) {
+            if (key === 'name') user[key] = data[key] as string
+            else if (key === 'phone') user[key] = data[key] as number
+            else if (key === 'address') user[key] = data[key] as string
+            else if (key === 'city') user[key] = data[key] as string
+            else if (key === 'avatar') user[key] = data[key] as string
+            else if (key === 'password') {
+                // gen new password
+                const { salt, hash } = await hashedPassword(data[key] as string)
+                user.pw_salt = salt
+                user.pw_hash = hash
+            }
+        }
+
+        // call service to update user
+        const updatedUser = await UserService.updateUser(user)
+        res.json({ msg: 'it works', updatedUser })
     } catch (error) {
         return next(new AppError(`${(error as Error).message}`, 400))
     }

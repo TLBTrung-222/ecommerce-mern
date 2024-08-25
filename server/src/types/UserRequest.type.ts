@@ -10,3 +10,12 @@ export interface SignInForm {
     email: string
     password: string
 }
+
+export interface UpdateForm {
+    name?: string
+    password?: string
+    phone?: number
+    address?: string
+    avatar?: string
+    city?: string
+}

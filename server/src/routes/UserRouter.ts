@@ -44,4 +44,15 @@ UserRouter.post('/sign-up', UserController.createUser)
  */
 UserRouter.post('/sign-in', UserController.logInUser)
 
+/**
+ * @swagger
+ * /update-user/{id}:
+ *      tags:
+ *          - User
+ *      parameters:
+ *          -
+ *
+ */
+UserRouter.put('/update-user/:id', UserController.updateUser)
+
 export default UserRouter
