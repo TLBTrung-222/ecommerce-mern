@@ -1,5 +1,5 @@
 import * as db from '../db'
-import { UserWithHashedPassword } from '../types/User.type'
+import { UserData, UserWithHashedPassword } from '../types/User.type'
 
 class User {
     /**
@@ -8,7 +8,7 @@ class User {
      * @param data user with hashed password + salt
      * @return The new user or null
      */
-    async create(data: UserWithHashedPassword): Promise<Object | null> {
+    async create(data: UserWithHashedPassword): Promise<UserData | null> {
         try {
             const { name, email, pw_hash, pw_salt } = data
 
@@ -25,7 +25,7 @@ class User {
         }
     }
 
-    async findByEmail(email: string) {
+    async findByEmail(email: string): Promise<UserData | null> {
         try {
             const sql = `SELECT * FROM users WHERE email=$1`
             const values = [email]

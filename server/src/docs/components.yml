@@ -1,0 +1,46 @@
+components:
+    securitySchemes:
+        BearerAuth:
+            type: http
+            scheme: bearer
+
+    schemas:
+        User:
+            type: object
+            properties:
+                id:
+                    type: integer
+                    example: 1
+                name:
+                    type: string
+                email:
+                    type: string
+                pw_hash:
+                    type: string
+                pw_salt:
+                    type: string
+                is_admin:
+                    type: boolean
+                phone:
+                    type: integer
+                    format: int64
+                address:
+                    type: string
+                avatar:
+                    type: string
+                city:
+                    type: string
+                created_at:
+                    type: string
+                    format: date-time
+                updated_at:
+                    type: string
+                    format: date-time
+
+        UserLogin:
+            type: object
+            properties:
+                email:
+                    type: string
+                password:
+                    type: string

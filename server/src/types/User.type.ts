@@ -1,10 +1,10 @@
 export interface UserData {
-    id?: number
+    id: number
     name: string
     email: string
     pw_hash: string
     pw_salt: string
-    is_admin?: boolean
+    is_admin: boolean
     phone?: number
     address?: string
     avatar?: string

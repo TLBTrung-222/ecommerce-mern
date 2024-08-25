@@ -1,29 +1,15 @@
 import { Application, Request, Response } from 'express'
 import swaggerJSDoc from 'swagger-jsdoc'
 import swaggerUi from 'swagger-ui-express'
+import { swaggerDefinition } from '../docs/swaggerDef'
 
 // 1. create swagger specification with swaggerJsDoc
 // (it will convert swagger comment on apis to result in a fully spec)
-// 2. Serve this spec to swagger-ui-express to create an api for the docs
-
-// define base spec
-const swaggerDefinition: swaggerJSDoc.OAS3Definition = {
-    openapi: '3.0.0',
-    info: {
-        title: 'E-commerce User API',
-        version: '1.0.0',
-        description: ' API doc for the PERN stack e-commerce application'
-    },
-
-    servers: [{ url: 'http://localhost:3000/', description: 'local server' }],
-    components: {
-        // TODO add security
-    }
-}
+// 2. Serve this spec to swagger-ui-express to create an api route for the docs
 
 const options: swaggerJSDoc.OAS3Options = {
     swaggerDefinition: swaggerDefinition,
-    apis: ['./routes/*.ts'] // looks for configuration in specified directories
+    apis: ['src/routes/*.ts', 'src/docs/*.yml'] // looks for configuration in specified directories
 }
 
 // Returns validated Swagger specification in JSON format.
