@@ -1,95 +1,95 @@
-// Service là thằng sẽ làm việc với database rồi trả data về controller
-// if smth not works, should throw error instead of return null
-// => controller don't need to check for null but catch the error directly
-
 import { SignInForm, SignUpForm } from '../types/UserRequest.type'
 import { comparePassword, hashedPassword } from '../utils/password'
 import UserModel from '../models/UserModel'
 import { UserData, UserUpdateBody } from '../types/User.type'
 import * as JwtService from '../services/JwtService'
+import { AppError } from '../utils/AppError'
 
-/**
- * Call to db to insert new user
- * @param data pass by controller
- */
-export const createUser = async (data: SignUpForm) => {
-    // call to db with hashed password + salt
-    try {
-        const { name, email, password } = data
+export const createUser = async (data: SignUpForm): Promise<UserData> => {
+    const { name, email, password } = data
 
-        const existUser = await UserModel.findByEmail(email)
-        if (existUser) {
-            throw new Error('Email already in use')
-        }
-
-        const { salt: pw_salt, hash: pw_hash } = await hashedPassword(password)
-        const newUser = await UserModel.create({ name, email, pw_salt, pw_hash })
-        // no need to check for existance, it will throw error if no user is created
-        return newUser
-    } catch (error) {
-        throw new Error(`${(error as Error).message}`)
+    const existUser = await UserModel.findByEmail(email)
+    if (existUser) {
+        throw new AppError('Email already in use', 409)
     }
+
+    const { salt: pw_salt, hash: pw_hash } = await hashedPassword(password)
+    const newUser = await UserModel.create({ name, email, pw_salt, pw_hash })
+
+    if (!newUser) {
+        throw new AppError('Failed to create user', 500)
+    }
+
+    return newUser
 }
 
 export const logInUser = async (data: SignInForm) => {
-    try {
-        const { email, password } = data
-        const existUser = await UserModel.findByEmail(email)
-        if (!existUser) {
-            throw new Error('Email not exist')
+    const { email, password } = data
+    const existUser = await UserModel.findByEmail(email)
+    if (!existUser) {
+        throw new AppError('Email not found', 404)
+    }
+
+    const { pw_hash } = existUser
+    const correctPassword = await comparePassword(password, pw_hash)
+    if (!correctPassword) {
+        throw new AppError('Incorrect password', 401)
+    }
+
+    const payload = { id: existUser.id, isAdmin: existUser.is_admin }
+    const accessToken = JwtService.generalAccessToken(payload)
+    const refreshToken = JwtService.generalRefreshToken(payload)
+
+    return { accessToken, refreshToken }
+}
+
+export const getUserByEmail = async (email: string): Promise<UserData> => {
+    const user = await UserModel.findByEmail(email)
+    if (!user) {
+        throw new AppError('User not found', 404)
+    }
+    return user
+}
+
+export const updateUser = async (userId: string, data: UserUpdateBody): Promise<UserData> => {
+    const user = await getUserById(userId)
+
+    // Validate properties in data and modify user object
+    for (const [key, value] of Object.entries(data)) {
+        if (['name', 'phone', 'address', 'city', 'avatar'].includes(key)) {
+            //@ts-ignore
+            user[key] = value as string
+        } else if (key === 'password') {
+            const { salt, hash } = await hashedPassword(value as string)
+            user.pw_salt = salt
+            user.pw_hash = hash
         }
-
-        // user existed, compare password
-        const { pw_hash } = existUser
-        const correctPassword = await comparePassword(password, pw_hash)
-        if (!correctPassword) throw new Error('Incorrect password')
-
-        // return jwt token to Controller
-        // jwt token payload = id + isAdmin from user
-        const payload = { id: existUser.id, isAdmin: existUser.is_admin }
-        const accessToken = JwtService.generalAccessToken(payload)
-        const refreshToken = JwtService.generalRefreshToken(payload)
-
-        return {
-            accessToken,
-            refreshToken
-        }
-    } catch (error) {
-        throw new Error(`${(error as Error).message}`)
     }
+
+    const updatedUser = await UserModel.update(user)
+    if (!updatedUser) {
+        throw new AppError('Failed to update user', 500)
+    }
+    return updatedUser
 }
 
-/**
- * Call to db to find user by their email
- * @param email
- */
-export const getUserByEmail = async (email: string) => {
-    try {
-        const user = await UserModel.findByEmail(email)
-        if (!user) throw new Error('Email not founded')
-        return user
-    } catch (error) {
-        throw new Error(`${(error as Error).message}`)
+export const getUserById = async (id: string): Promise<UserData> => {
+    const user = await UserModel.findById(id)
+    if (!user) {
+        throw new AppError('User not found', 404)
     }
+    return user
 }
 
-export const updateUser = async (user: UserData) => {
-    try {
-        const updatedUser = await UserModel.update(user)
-        if (!updatedUser) throw new Error('Can not update user')
-
-        return updatedUser
-    } catch (error) {
-        throw new Error(`${(error as Error).message}`)
+export const deleteUser = async (id: string): Promise<UserData> => {
+    const deletedUser = await UserModel.delete(id)
+    if (!deletedUser) {
+        throw new AppError('Failed to delete user', 500)
     }
+    return deletedUser
 }
 
-export const getUserById = async (id: string) => {
-    try {
-        const user = await UserModel.findById(id)
-        if (!user) throw new Error('User not founded')
-        return user
-    } catch (error) {
-        throw new Error(`${(error as Error).message}`)
-    }
+export const getAllUser = async (): Promise<UserData[]> => {
+    const users = await UserModel.getAll()
+    return users
 }

@@ -4,7 +4,7 @@ const app: Application = express()
 import expressLoader from './express'
 import swaggerLoader from './swagger'
 import routesLoader from '../routes'
-import errorHandler from '../middlewares/errorMiddleware'
+import errorMiddleware from '../middlewares/errorMiddleware'
 
 /**
  * Load middleware, route, etc... to the app instance
@@ -14,7 +14,7 @@ const loadApp = () => {
     swaggerLoader(app)
     routesLoader(app)
 
-    app.use(errorHandler)
+    app.use(errorMiddleware)
 }
 
 loadApp()

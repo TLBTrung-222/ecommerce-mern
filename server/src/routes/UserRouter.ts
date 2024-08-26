@@ -1,5 +1,6 @@
 import { Router } from 'express'
 import * as UserController from '../controllers/UserController'
+import { authMiddleware } from '../middlewares/authMiddleware'
 const UserRouter = Router()
 
 /**
@@ -79,5 +80,34 @@ UserRouter.post('/sign-in', UserController.logInUser)
  *               $ref: '#/components/schemas/Error'
  */
 UserRouter.put('/update-user/:id', UserController.updateUser)
+
+/**
+ * @swagger
+ * /user/delete-user/{id}:
+ *   delete:
+ *     summary: Delete user by id (Admin only)
+ *     description: Only admin users can delete a user.
+ *     security:
+ *       - BearerAuth: []
+ *     tags:
+ *       - User
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: The ID of the user to delete
+ *     responses:
+ *       200:
+ *         description: User deleted successfully
+ *       404:
+ *         description: User not found
+ *       400:
+ *         description: Bad request
+ */
+UserRouter.delete('/delete-user/:id', authMiddleware, UserController.deleteUser) // only admin can delete user
+
+UserRouter.get('/get-all', authMiddleware, UserController.getAllUser)
 
 export default UserRouter

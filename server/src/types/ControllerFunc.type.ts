@@ -5,4 +5,4 @@ export type Controller<T extends Request = Request> = (
     req: T,
     res: Response,
     next: NextFunction
-) => Promise<void> | void
+) => Promise<void> | void | Response

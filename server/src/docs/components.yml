@@ -3,6 +3,7 @@ components:
         BearerAuth:
             type: http
             scheme: bearer
+            bearerFormat: JWT
 
     schemas:
         User:

@@ -3,40 +3,33 @@ import * as UserService from '../services/UserService'
 import { SignInForm, SignUpForm } from '../types/UserRequest.type'
 import { validateSignInData, validateSignUpData, validateUpdateData } from '../utils/validator'
 import { AppError } from '../utils/AppError'
-import { UserUpdate } from '../types/User.type'
-import { hashedPassword } from '../utils/password'
+import { UserUpdate, UserWithId } from '../types/User.type'
+import { handleError } from '../utils/handleError'
 
 export const createUser: Controller = async (req, res, next) => {
     try {
         const body: SignUpForm = req.body
         const validationError = validateSignUpData(body)
 
-        if (validationError) return next(new AppError(validationError, 400)) // 400: Bad Request
+        if (validationError) throw new AppError(validationError, 400)
 
-        // call to service
         const response = await UserService.createUser(body)
-        res.status(201).json({ message: 'user is created', user: response })
+        res.status(201).json({ message: 'User created successfully', user: response })
     } catch (error) {
-        return next(new AppError(`${(error as Error).message}`, 400))
-        // If you pass anything to the next() function (except the string 'route')
-        // => Express regards the current request as being an error and will skip any remaining
-        // non-error handling routing and middleware functions.
+        handleError(error, next)
     }
 }
 
 export const logInUser: Controller = async (req, res, next) => {
     try {
         const body: SignInForm = req.body
-
-        // validate user input
         const validationError = validateSignInData(body)
-        if (validationError) return next(new AppError(validationError, 400)) // 400: Bad Request
+        if (validationError) throw new AppError(validationError, 400)
 
         const { accessToken, refreshToken } = await UserService.logInUser(body)
-
-        res.status(200).json({ message: 'correct password', accessToken, refreshToken })
+        res.status(200).json({ message: 'Login successful', accessToken, refreshToken })
     } catch (error) {
-        return next(new AppError(`${(error as Error).message}`, 400))
+        handleError(error, next)
     }
 }
 
@@ -45,32 +38,31 @@ export const updateUser: Controller<UserUpdate> = async (req, res, next) => {
         const userId = req.params.id
         const data = req.body
 
-        // validate input
         const validationError = validateUpdateData(data)
-        if (validationError) return next(new AppError(validationError, 400)) // 400: Bad Request
+        if (validationError) throw new AppError(validationError, 400)
 
-        // validate id
-        const user = await UserService.getUserById(userId)
-
-        // validate properties in data and modify user
-        for (const key in data) {
-            if (key === 'name') user[key] = data[key] as string
-            else if (key === 'phone') user[key] = data[key] as string
-            else if (key === 'address') user[key] = data[key] as string
-            else if (key === 'city') user[key] = data[key] as string
-            else if (key === 'avatar') user[key] = data[key] as string
-            else if (key === 'password') {
-                // gen new password
-                const { salt, hash } = await hashedPassword(data[key] as string)
-                user.pw_salt = salt
-                user.pw_hash = hash
-            }
-        }
-
-        // call service to update user
-        const updatedUser = await UserService.updateUser(user)
-        res.status(200).json({ message: 'updated user succesfully!', updatedUser })
+        const updatedUser = await UserService.updateUser(userId, data)
+        res.status(200).json({ message: 'User updated successfully', updatedUser })
     } catch (error) {
-        return next(new AppError(`${(error as Error).message}`, 400))
+        handleError(error, next)
+    }
+}
+
+export const deleteUser: Controller<UserWithId> = async (req, res, next) => {
+    try {
+        const userId = req.params.id
+        const deletedUser = await UserService.deleteUser(userId)
+        res.status(200).json({ message: 'User deleted successfully', deletedUser })
+    } catch (error) {
+        handleError(error, next)
+    }
+}
+
+export const getAllUser: Controller = async (req, res, next) => {
+    try {
+        const users = await UserService.getAllUser()
+        res.status(200).json({ users })
+    } catch (error) {
+        handleError(error, next)
     }
 }
