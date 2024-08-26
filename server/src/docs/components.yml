@@ -36,6 +36,15 @@ components:
                 updated_at:
                     type: string
                     format: date-time
+            example:
+                id: d290f1ee-6c54-4b01-90e6-d701748f0851
+                name: John Doe
+                email: john@example.com
+                is_admin: false
+                phone: '1234567890'
+                address: '123 Main St'
+                avatar: 'https://example.com/avatar.jpg'
+                city: 'New York'
 
         UserSignUp:
             type: object
