@@ -1,21 +1,20 @@
-import { Controller } from '../types/ControllerFunc.type'
-import * as UserService from '../services/UserService'
-import { SignInForm, SignUpForm } from '../types/UserRequest.type'
-import { validateSignInData, validateSignUpData, validateUpdateData } from '../utils/validator'
-import { AppError } from '../utils/AppError'
-import { UserUpdate, RequestWithId } from '../types/User.type'
-import handleError from '../utils/handleError'
+import { ApiResponse, Controller, RequestWithId, SignInForm, SignUpForm, UserUpdate } from '../types'
 import * as JwtService from '../services/JwtService'
+import * as UserService from '../services/UserService'
+import { ApiError } from '../utils/ApiError'
+import handleError from '../utils/handleError'
+import { validateSignInData, validateSignUpData, validateUpdateData } from '../utils/validator'
 
 export const createUser: Controller = async (req, res, next) => {
     try {
         const body: SignUpForm = req.body
         const validationError = validateSignUpData(body)
 
-        if (validationError) throw new AppError(validationError, 400)
+        if (validationError) throw new ApiError(validationError, 400)
 
         const user = await UserService.createUser(body)
-        res.status(201).json({ message: 'User created successfully', user })
+        const response: ApiResponse = { success: true, message: 'User created successfully', data: { user } }
+        res.status(201).json(response)
     } catch (error) {
         handleError(error, next)
     }
@@ -25,19 +24,18 @@ export const logInUser: Controller = async (req, res, next) => {
     try {
         const body: SignInForm = req.body
         const validationError = validateSignInData(body)
-        if (validationError) throw new AppError(validationError, 400)
+        if (validationError) throw new ApiError(validationError, 400)
 
         const { accessToken, refreshToken } = await UserService.logInUser(body)
 
-        // Set the refresh token in an HTTP-only cookie
         res.cookie('refresh_token', refreshToken, {
             httpOnly: true,
-            maxAge: 60 * 60 * 24 * 1000, // 1 day (ms)
+            maxAge: 60 * 60 * 24 * 1000, // 1 day in milliseconds
             secure: process.env.NODE_ENV === 'production'
         })
 
-        // Return a JSON response with accessToken
-        res.status(200).json({ message: 'Login successful', accessToken })
+        const response: ApiResponse = { success: true, message: 'Login successful', data: { accessToken } }
+        res.status(200).json(response)
     } catch (error) {
         handleError(error, next)
     }
@@ -49,10 +47,11 @@ export const updateUser: Controller<UserUpdate> = async (req, res, next) => {
         const data = req.body
 
         const validationError = validateUpdateData(data)
-        if (validationError) throw new AppError(validationError, 400)
+        if (validationError) throw new ApiError(validationError, 400)
 
         const updatedUser = await UserService.updateUser(userId, data)
-        res.status(200).json({ message: 'User updated successfully', updatedUser })
+        const response: ApiResponse = { success: true, message: 'User updated successfully', data: { updatedUser } }
+        res.status(200).json(response)
     } catch (error) {
         handleError(error, next)
     }
@@ -62,7 +61,8 @@ export const deleteUser: Controller<RequestWithId> = async (req, res, next) => {
     try {
         const userId = req.params.id
         const deletedUser = await UserService.deleteUser(userId)
-        res.status(200).json({ message: 'User deleted successfully', deletedUser })
+        const response: ApiResponse = { success: true, message: 'User deleted successfully', data: { deletedUser } }
+        res.status(200).json(response)
     } catch (error) {
         handleError(error, next)
     }
@@ -71,7 +71,8 @@ export const deleteUser: Controller<RequestWithId> = async (req, res, next) => {
 export const getAllUser: Controller = async (req, res, next) => {
     try {
         const users = await UserService.getAllUser()
-        res.status(200).json({ users })
+        const response: ApiResponse = { success: true, message: 'Users retrieved successfully', data: { users } }
+        res.status(200).json(response)
     } catch (error) {
         handleError(error, next)
     }
@@ -80,21 +81,26 @@ export const getAllUser: Controller = async (req, res, next) => {
 export const getDetail: Controller<RequestWithId> = async (req, res, next) => {
     try {
         const user = await UserService.getUserById(req.params.id)
-        res.status(200).json(user)
+        const response: ApiResponse = { success: true, message: 'User details retrieved successfully', data: { user } }
+        res.status(200).json(response)
     } catch (error) {
         handleError(error, next)
     }
 }
 
-// check if request have refreshToken in cookie -> verify if valid refreshToken -> create + issue new accessToken
 export const refreshAccessToken: Controller = async (req, res, next) => {
     try {
         const refreshToken = req.cookies.refresh_token
 
-        if (!refreshToken) throw new AppError('No refresh token founded', 400)
+        if (!refreshToken) throw new ApiError('No refresh token found', 400)
 
         const newAccessToken = await JwtService.refreshAccessToken(refreshToken)
-        res.status(200).json({ newAccessToken })
+        const response: ApiResponse = {
+            success: true,
+            message: 'Access token refreshed successfully',
+            data: { newAccessToken }
+        }
+        res.status(200).json(response)
     } catch (error) {
         handleError(error, next)
     }

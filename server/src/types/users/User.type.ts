@@ -15,28 +15,9 @@ export interface UserData {
     updated_at?: Date
 }
 
-// register user to db
 export interface UserWithHashedPassword {
     name: string
     email: string
     pw_hash: string
     pw_salt: string
-}
-
-export interface UserUpdateBody {
-    name?: string
-    password?: string
-    phone?: string
-    address?: string
-    avatar?: string
-    city?: string
-}
-
-export interface UserUpdate extends Request {
-    params: { id: string }
-    body: UserUpdateBody
-}
-
-export interface RequestWithId extends Request {
-    params: { id: string }
 }

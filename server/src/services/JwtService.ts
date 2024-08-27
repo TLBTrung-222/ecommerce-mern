@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken'
 import { env } from '../config/environment'
-import { IPayload } from '../types/Jwt.type'
-import { AppError } from '../utils/AppError'
+import { IPayload } from '../types/common'
+import { ApiError } from '../utils/ApiError'
 
 export const generalAccessToken = (payload: IPayload) => {
     const accessToken = jwt.sign(payload, env.ACCESS_TOKEN_SECRET, { expiresIn: '15m' })
@@ -22,7 +22,7 @@ export const refreshAccessToken = (refreshToken: string): Promise<string> => {
     return new Promise((resolve, reject) => {
         jwt.verify(refreshToken, env.REFRESH_TOKEN_SECRET, (error, decoded) => {
             if (error) {
-                reject(new AppError(error.message, 400))
+                reject(new ApiError(error.message, 400))
             } else {
                 // refresh token is okay, issue new access token
                 const { id, isAdmin } = decoded as IPayload

@@ -11,7 +11,7 @@ import { Application } from 'express'
  */
 export default function routesLoader(app: Application) {
     app.use('/api/users', UserRouter)
-    app.use('/api/order', OrderRouter)
-    app.use('/api/product', ProductRouter)
-    app.use('/api/payment', PaymentRouter)
+    app.use('/api/products', ProductRouter)
+    app.use('/api/orders', OrderRouter)
+    app.use('/api/payments', PaymentRouter)
 }

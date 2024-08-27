@@ -4,8 +4,8 @@
 -   Service layer execute complex business logic, interact with db and give the result to Controller layer (also throw error if exists to Controller)
 -   I choose not to use try-catch block in Service layer for Single Responsibility Principle, the error get from Service will be
     buble up to be catched by Controller
--   Model: return user | null | throw error
-    Service: if Model return null, it throw error
+-   Model: return user | null (for not found scenario) | throw error (for update/delete...)
+    Service: handle result returned from model (for e.g if Model return null, it throw error)
     Controller: Catch error from both layers, aggregate error + pass to error middleware
 -   Do not store sensitive information on jwt, because payload is just base 64 and can be decoded easily.
 -   JWT: stored `refreshToken` on cookit with httpOnly to prevent XSS attack (accessible via JS code), stored `accessToken` on `localStorage` for easy to retrieve and if it stealed, no much worry  
@@ -22,6 +22,7 @@
 5. Send jwt to user when register done
 6. Store refresh token in database (Redis cache, ...)
 7. Move auth routes from UserRouter to a seperate AuthRouter
+8. Move all types to index.ts
 
 ## Learn
 

@@ -9,3 +9,7 @@ declare global {
         }
     }
 }
+
+export interface RequestWithId extends Request {
+    params: { id: string }
+}

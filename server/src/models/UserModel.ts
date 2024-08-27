@@ -1,14 +1,13 @@
 import * as db from '../db'
-import { UserData, UserWithHashedPassword } from '../types/User.type'
-import { AppError } from '../utils/AppError'
+import { UserData, UserWithHashedPassword } from '../types'
+import { ApiError } from '../utils/ApiError'
 
 /**
- * Interact with db, throw Internal server error if error exist
+ * Interact with db, return user | null | throw error
  */
 class User {
     async create(data: UserWithHashedPassword): Promise<UserData> {
         const { name, email, pw_hash, pw_salt } = data
-
         const sql = `INSERT INTO users (name, email, pw_hash, pw_salt) 
                      VALUES ($1, $2, $3, $4) 
                      RETURNING *`
@@ -17,11 +16,11 @@ class User {
         try {
             const result = await db.query(sql, values)
             if (result.rows.length === 0) {
-                throw new AppError('Failed to create user', 500)
+                throw new ApiError('Failed to create user', 500)
             }
             return result.rows[0]
         } catch (error) {
-            throw new AppError(`Database error: ${(error as Error).message}`, 500)
+            throw new ApiError(`Database error: ${(error as Error).message}`, 500)
         }
     }
 
@@ -45,11 +44,11 @@ class User {
         try {
             const result = await db.query(sql, values)
             if (result.rows.length === 0) {
-                throw new AppError('User not found', 404)
+                throw new ApiError('User not found', 404)
             }
             return result.rows[0]
         } catch (error) {
-            throw new AppError(`Database error: ${(error as Error).message}`, 500)
+            throw new ApiError(`Database error: ${(error as Error).message}`, 500)
         }
     }
 
@@ -60,11 +59,11 @@ class User {
         try {
             const result = await db.query(sql, values)
             if (result.rows.length === 0) {
-                throw new AppError('User not found', 404)
+                throw new ApiError('User not found', 404)
             }
             return result.rows[0]
         } catch (error) {
-            throw new AppError(`Database error: ${(error as Error).message}`, 500)
+            throw new ApiError(`Database error: ${(error as Error).message}`, 500)
         }
     }
 
@@ -76,7 +75,7 @@ class User {
             const result = await db.query(sql, values)
             return result.rows[0] || null
         } catch (error) {
-            throw new AppError(`Database error: ${(error as Error).message}`, 500)
+            throw new ApiError(`Database error: ${(error as Error).message}`, 500)
         }
     }
 
@@ -88,7 +87,7 @@ class User {
             const result = await db.query(sql, values)
             return result.rows[0] || null
         } catch (error) {
-            throw new AppError(`Database error: ${(error as Error).message}`, 500)
+            throw new ApiError(`Database error: ${(error as Error).message}`, 500)
         }
     }
 
@@ -99,7 +98,7 @@ class User {
             const result = await db.query(sql)
             return result.rows
         } catch (error) {
-            throw new AppError(`Database error: ${(error as Error).message}`, 500)
+            throw new ApiError(`Database error: ${(error as Error).message}`, 500)
         }
     }
 }

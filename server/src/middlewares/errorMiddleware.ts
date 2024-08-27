@@ -1,13 +1,22 @@
 import { Request, Response, NextFunction } from 'express'
-import { AppError } from '../utils/AppError'
+import { ApiError } from '../utils/ApiError'
+import { ApiResponse } from '../types'
 
-const errorMiddleware = (err: AppError | Error, req: Request, res: Response, next: NextFunction) => {
+/**
+ * Handle error passed by controller
+ * @param error
+ * @param req
+ * @param res
+ * @param next
+ */
+const errorMiddleware = (error: ApiError | Error | undefined, req: Request, res: Response, next: NextFunction) => {
     let status = 500
-    if (err instanceof AppError) {
-        status = err.statusCode
+    if (error instanceof ApiError) {
+        status = error.statusCode
     }
-    const errorMessage = err.message || 'Internal Server Error'
-    res.status(status).json({ error: errorMessage })
+    const errorMessage = error?.message || 'Internal Server Error'
+    const response: ApiResponse = { success: false, error: errorMessage }
+    res.status(status).json(response)
 }
 
 export default errorMiddleware

@@ -1,6 +1,6 @@
 // helpers validatation func
 
-import { SignInForm, SignUpForm, UpdateForm } from '../types/UserRequest.type'
+import { SignInForm, SignUpForm, UpdateForm } from '../types/users'
 
 export const isEmpty = (value: string): boolean => !value.trim().length
 

@@ -1,11 +1,12 @@
 import { env } from '../config/environment'
-import { Controller } from '../types/ControllerFunc.type'
+import { Controller } from '../types'
 import jwt from 'jsonwebtoken'
-import { IPayload } from '../types/Jwt.type'
-import { AuthLevel } from '../types/Auth.type'
+import { IPayload } from '../types/common'
 import handleError from '../utils/handleError'
-import { AppError } from '../utils/AppError'
-import { RequestWithId } from '../types/User.type'
+import { ApiError } from '../utils/ApiError'
+import { RequestWithId } from '../types/common'
+
+export type AuthLevel = 'admin' | 'user'
 
 /**
  * Create auth middleware correspond for admin-only and user-only route
@@ -15,25 +16,25 @@ const createAuthMiddleware = (requiredAuthLevel: AuthLevel): Controller<RequestW
     return (req, res, next) => {
         try {
             if (!req.headers.authorization) {
-                throw new AppError("Request's headers not include 'authorization' field", 401)
+                throw new ApiError("Request's headers not include 'authorization' field", 401)
             }
             const token: string = req.headers.authorization.split(' ')[1]
             if (!token) {
-                throw new AppError('No token provided', 401)
+                throw new ApiError('No token provided', 401)
             }
 
             jwt.verify(token, env.ACCESS_TOKEN_SECRET, (error, decoded) => {
-                if (error) throw new AppError(error.message, 401)
+                if (error) throw new ApiError(error.message, 401)
 
                 const { id, isAdmin } = decoded as IPayload
 
                 switch (requiredAuthLevel) {
                     case 'admin':
-                        if (!isAdmin) throw new AppError('Forbidden: Admins only', 403)
+                        if (!isAdmin) throw new ApiError('Forbidden: Admins only', 403)
                         break
                     case 'user':
                         if (id !== parseInt(req.params.id) && !isAdmin)
-                            throw new AppError('Forbidden: You can only access your own resources', 403)
+                            throw new ApiError('Forbidden: You can only access your own resources', 403)
                         break
                     default:
                         break
