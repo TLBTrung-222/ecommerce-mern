@@ -21,6 +21,7 @@
 4. Use a http status code library instead of remembering status code
 5. Send jwt to user when register done
 6. Store refresh token in database (Redis cache, ...)
+7. Move auth routes from UserRouter to a seperate AuthRouter
 
 ## Learn
 

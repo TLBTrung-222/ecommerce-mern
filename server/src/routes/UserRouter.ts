@@ -3,6 +3,7 @@ import * as UserController from '../controllers/UserController'
 import { adminAuth, userAuth } from '../middlewares/authMiddleware'
 const UserRouter = Router()
 
+//---------------------------------------- Auth routes ------------------------------------------------------------
 /**
  * @swagger
  * /user/sign-up:
@@ -22,7 +23,7 @@ const UserRouter = Router()
  *       401:
  *         description: Bad request
  */
-UserRouter.post('/sign-up', UserController.createUser)
+UserRouter.post('/auth/sign-up', UserController.createUser)
 
 /**
  * @swagger
@@ -43,71 +44,33 @@ UserRouter.post('/sign-up', UserController.createUser)
  *       400:
  *         description: Unauthorized
  */
-UserRouter.post('/sign-in', UserController.logInUser)
+UserRouter.post('/auth/sign-in', UserController.logInUser)
 
 /**
  * @swagger
- * /user/update-user/{id}:
- *   put:
- *     summary: Update a user by ID
+ * /user/refresh-token:
+ *   post:
  *     tags:
  *       - User
- *     parameters:
- *       - in: path
- *         name: id
- *         schema:
- *           type: string
- *         required: true
- *         description: The ID of the user to update
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             $ref: '#/components/schemas/UserUpdate'
+ *     summary: Refresh access token based on refresh token
+ *     description: Refresh token stored in cookie, access token stored in local storage
  *     responses:
  *       200:
- *         description: User updated successfully
+ *         description: Refresh token valid, return new access token
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/User'
+ *               type: object
+ *               properties:
+ *                 newAccessToken:
+ *                   type: string
+ *                   example: eyJhbGci...
  *       400:
- *         description: Bad request
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Error'
+ *         description: No refresh token found, or invalid refresh token
  */
-UserRouter.put('/update-user/:id', UserController.updateUser)
+UserRouter.post('/auth/refresh-token', UserController.refreshAccessToken)
 
-/**
- * @swagger
- * /user/delete-user/{id}:
- *   delete:
- *     summary: Delete user by id (Admin only)
- *     description: Only admin users can delete a user.
- *     security:
- *       - BearerAuth: []
- *     tags:
- *       - User
- *     parameters:
- *       - in: path
- *         name: id
- *         schema:
- *           type: string
- *         required: true
- *         description: The ID of the user to delete
- *     responses:
- *       200:
- *         description: User deleted successfully
- *       404:
- *         description: User not found
- *       400:
- *         description: Bad request
- */
-UserRouter.delete('/delete-user/:id', adminAuth, UserController.deleteUser)
-
+//---------------------------------------- Resource routes ------------------------------------------------------------
 /**
  * @swagger
  * /user/get-all:
@@ -143,7 +106,7 @@ UserRouter.delete('/delete-user/:id', adminAuth, UserController.deleteUser)
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-UserRouter.get('/get-all', adminAuth, UserController.getAllUser)
+UserRouter.get('/', adminAuth, UserController.getAllUser)
 
 /**
  * @swagger
@@ -178,30 +141,69 @@ UserRouter.get('/get-all', adminAuth, UserController.getAllUser)
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-UserRouter.get('/detail/:id', userAuth, UserController.getDetail)
+UserRouter.get('/:id', userAuth, UserController.getDetail)
 
 /**
  * @swagger
- * /user/refresh-token:
- *   post:
+ * /user/update-user/{id}:
+ *   put:
+ *     summary: Update a user by ID
  *     tags:
  *       - User
- *     summary: Refresh access token based on refresh token
- *     description: Refresh token stored in cookie, access token stored in local storage
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: The ID of the user to update
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/UserUpdate'
  *     responses:
  *       200:
- *         description: Refresh token valid, return new access token
+ *         description: User updated successfully
  *         content:
  *           application/json:
  *             schema:
- *               type: object
- *               properties:
- *                 newAccessToken:
- *                   type: string
- *                   example: eyJhbGci...
+ *               $ref: '#/components/schemas/User'
  *       400:
- *         description: No refresh token found, or invalid refresh token
+ *         description: Bad request
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
  */
-UserRouter.post('/refresh-token', UserController.refreshAccessToken)
+UserRouter.put('/:id', userAuth, UserController.updateUser)
+
+/**
+ * @swagger
+ * /user/delete-user/{id}:
+ *   delete:
+ *     summary: Delete user by id (Admin only)
+ *     description: Only admin users can delete a user.
+ *     security:
+ *       - BearerAuth: []
+ *     tags:
+ *       - User
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: The ID of the user to delete
+ *     responses:
+ *       200:
+ *         description: User deleted successfully
+ *       404:
+ *         description: User not found
+ *       400:
+ *         description: Bad request
+ */
+UserRouter.delete('/:id', adminAuth, UserController.deleteUser)
 
 export default UserRouter

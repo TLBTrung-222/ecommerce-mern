@@ -10,7 +10,7 @@ import { Application } from 'express'
  * @param app
  */
 export default function routesLoader(app: Application) {
-    app.use('/api/user', UserRouter)
+    app.use('/api/users', UserRouter)
     app.use('/api/order', OrderRouter)
     app.use('/api/product', ProductRouter)
     app.use('/api/payment', PaymentRouter)
