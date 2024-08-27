@@ -1,4 +1,5 @@
 import express, { Application } from 'express'
+import cookieParser from 'cookie-parser'
 
 /**
  * Configures middleware for the Express application.
@@ -10,6 +11,9 @@ const expressLoader = (app: Application) => {
 
     // parse urlencoded request body
     app.use(express.urlencoded({ extended: true }))
+
+    // parse cookie
+    app.use(cookieParser())
 }
 
 export default expressLoader

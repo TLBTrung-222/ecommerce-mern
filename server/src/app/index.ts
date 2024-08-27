@@ -1,3 +1,4 @@
+/// <reference path="../types/express.d.ts" />
 // expost an Express app instance (intgrate route, swagger, ...)
 import express, { Application } from 'express'
 const app: Application = express()

@@ -37,6 +37,6 @@ export interface UserUpdate extends Request {
     body: UserUpdateBody
 }
 
-export interface UserWithId extends Request {
+export interface RequestWithId extends Request {
     params: { id: string }
 }

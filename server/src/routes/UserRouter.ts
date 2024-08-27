@@ -1,6 +1,6 @@
 import { Router } from 'express'
 import * as UserController from '../controllers/UserController'
-import { authMiddleware } from '../middlewares/authMiddleware'
+import { adminAuth, userAuth } from '../middlewares/authMiddleware'
 const UserRouter = Router()
 
 /**
@@ -106,8 +106,102 @@ UserRouter.put('/update-user/:id', UserController.updateUser)
  *       400:
  *         description: Bad request
  */
-UserRouter.delete('/delete-user/:id', authMiddleware, UserController.deleteUser) // only admin can delete user
+UserRouter.delete('/delete-user/:id', adminAuth, UserController.deleteUser)
 
-UserRouter.get('/get-all', authMiddleware, UserController.getAllUser)
+/**
+ * @swagger
+ * /user/get-all:
+ *   get:
+ *     summary: Retrieve all non-admin users
+ *     description: Retrieves a list of all non-admin users. This route requires authentication.
+ *     tags:
+ *       - User
+ *     security:
+ *       - BearerAuth: []
+ *     responses:
+ *       200:
+ *         description: A list of users retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 users:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/User'
+ *       401:
+ *         description: Unauthorized - User is not authenticated
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
+UserRouter.get('/get-all', adminAuth, UserController.getAllUser)
+
+/**
+ * @swagger
+ * /user/detail/{id}:
+ *   get:
+ *     summary: Get details about user
+ *     tags:
+ *       - User
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: User details retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/User'
+ *       404:
+ *         description: User not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
+UserRouter.get('/detail/:id', userAuth, UserController.getDetail)
+
+/**
+ * @swagger
+ * /user/refresh-token:
+ *   post:
+ *     tags:
+ *       - User
+ *     summary: Refresh access token based on refresh token
+ *     description: Refresh token stored in cookie, access token stored in local storage
+ *     responses:
+ *       200:
+ *         description: Refresh token valid, return new access token
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 newAccessToken:
+ *                   type: string
+ *                   example: eyJhbGci...
+ *       400:
+ *         description: No refresh token found, or invalid refresh token
+ */
+UserRouter.post('/refresh-token', UserController.refreshAccessToken)
 
 export default UserRouter
