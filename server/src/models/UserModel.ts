@@ -7,11 +7,19 @@ import { ApiError } from '../utils/ApiError'
  */
 class User {
     async create(data: UserWithHashedPassword): Promise<UserData> {
-        const { name, email, pw_hash, pw_salt } = data
-        const sql = `INSERT INTO users (name, email, pw_hash, pw_salt) 
-                     VALUES ($1, $2, $3, $4) 
-                     RETURNING *`
-        const values = [name, email, pw_hash, pw_salt]
+        const { name, email, pw_hash, pw_salt, phone } = data
+        let sql: string, values: any[]
+        if (!phone) {
+            sql = `INSERT INTO users (name, email, pw_hash, pw_salt) 
+                         VALUES ($1, $2, $3, $4) 
+                         RETURNING *`
+            values = [name, email, pw_hash, pw_salt]
+        } else {
+            sql = `INSERT INTO users (name, email, pw_hash, pw_salt, phone) 
+                    VALUES ($1, $2, $3, $4, $5) 
+                    RETURNING *`
+            values = [name, email, pw_hash, pw_salt, phone]
+        }
 
         try {
             const result = await db.query(sql, values)

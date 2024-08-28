@@ -5,7 +5,7 @@ import { ApiError } from '../utils/ApiError'
 import { comparePassword, hashedPassword } from '../utils/password'
 
 export const createUser = async (data: SignUpForm): Promise<UserData> => {
-    const { name, email, password } = data
+    const { name, email, password, phone } = data
 
     const existUser = await UserModel.findByEmail(email)
     if (existUser) {
@@ -13,7 +13,10 @@ export const createUser = async (data: SignUpForm): Promise<UserData> => {
     }
 
     const { salt: pw_salt, hash: pw_hash } = await hashedPassword(password)
-    const newUser = await UserModel.create({ name, email, pw_salt, pw_hash })
+    let newUser
+    if (!phone) {
+        newUser = await UserModel.create({ name, email, pw_salt, pw_hash })
+    } else newUser = await UserModel.create({ name, email, pw_salt, pw_hash, phone })
 
     return newUser
 }

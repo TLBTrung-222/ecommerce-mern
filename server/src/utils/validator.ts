@@ -15,7 +15,7 @@ export const validateSignUpData = (formData: SignUpForm) => {
     if (!name || !email || !password || !confirmPassword)
         return 'All field (name, email, password, confirmPassword) is required'
 
-    if (containEmptyField(formData)) return 'Contains empty field'
+    // if (containEmptyField(formData)) return 'Contains empty field'
 
     if (!validatePassword(password))
         return 'Password need to be at least 8 characters, including one letter and one number'

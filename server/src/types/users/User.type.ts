@@ -20,6 +20,7 @@ export interface UserWithHashedPassword {
     email: string
     pw_hash: string
     pw_salt: string
+    phone?: string
 }
 
 export interface UserUpdateBody {
