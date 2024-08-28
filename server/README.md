@@ -1,5 +1,7 @@
 ## Note
 
+-   When update new entity, the update form sent from client can contains properties that not belong to entity's properties, and
+    we will just get the necessary properties and ignore others
 -   Controller layer handle req/res, validate user input. It will delegate other business logic to Service layer. Controller do the heavy thing, mainly interact with req/res
 -   Service layer execute complex business logic, interact with db and give the result to Controller layer (also throw error if exists to Controller)
 -   I choose not to use try-catch block in Service layer for Single Responsibility Principle, the error get from Service will be

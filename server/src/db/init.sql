@@ -27,7 +27,7 @@ CREATE TABLE products (
     rating DECIMAL(3, 2) NOT NULL,
     description TEXT,
     discount DECIMAL(5, 2),
-    selled INTEGER,
+    selled INTEGER DEFAULT 0,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

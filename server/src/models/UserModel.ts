@@ -26,7 +26,7 @@ class User {
 
     async update(data: UserData): Promise<UserData> {
         const sql = `UPDATE users 
-                     SET name=$2, pw_hash=$3, pw_salt=$4, is_admin=$5, phone=$6, address=$7, avatar=$8, city=$9 
+                     SET name=$2, pw_hash=$3, pw_salt=$4, is_admin=$5, phone=$6, address=$7, avatar=$8, city=$9, updated_at=now() 
                      WHERE id=$1
                      RETURNING *`
         const values = [

@@ -1,3 +1,2 @@
 export * from './User.type'
-export * from './UserRequest.type'
-export * from './UserUpdate.type'
+export * from './UserForm.type'

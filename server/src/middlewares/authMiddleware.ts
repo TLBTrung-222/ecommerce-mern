@@ -1,10 +1,8 @@
 import { env } from '../config/environment'
-import { Controller } from '../types'
+import { Controller, IPayload, RequestWithId } from '../types'
 import jwt from 'jsonwebtoken'
-import { IPayload } from '../types/common'
 import handleError from '../utils/handleError'
 import { ApiError } from '../utils/ApiError'
-import { RequestWithId } from '../types/common'
 
 export type AuthLevel = 'admin' | 'user'
 
@@ -16,7 +14,7 @@ const createAuthMiddleware = (requiredAuthLevel: AuthLevel): Controller<RequestW
     return (req, res, next) => {
         try {
             if (!req.headers.authorization) {
-                throw new ApiError("Request's headers not include 'authorization' field", 401)
+                throw new ApiError('Request unauthorized, sign in first!', 401)
             }
             const token: string = req.headers.authorization.split(' ')[1]
             if (!token) {

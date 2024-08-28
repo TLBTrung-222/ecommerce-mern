@@ -3,6 +3,7 @@ import * as UserController from '../controllers/UserController'
 import { adminAuth, userAuth } from '../middlewares/authMiddleware'
 const UserRouter = Router()
 
+// TODO: Update swagger
 //---------------------------------------- Auth routes ------------------------------------------------------------
 /**
  * @swagger
