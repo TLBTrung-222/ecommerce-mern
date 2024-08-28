@@ -30,8 +30,8 @@ export const logInUser: Controller = async (req, res, next) => {
 
         res.cookie('refresh_token', refreshToken, {
             httpOnly: true,
-            maxAge: 60 * 60 * 24 * 1000, // 1 day in milliseconds
-            secure: process.env.NODE_ENV === 'production'
+            maxAge: 60 * 60 * 24 * 1000 // 1 day in milliseconds
+            // secure: process.env.NODE_ENV === 'production'
         })
 
         const response: ApiResponse = { success: true, message: 'Login successful', data: { accessToken } }
