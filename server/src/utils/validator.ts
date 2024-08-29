@@ -10,12 +10,13 @@ export const isEmpty = (value: string): boolean => !value.trim().length
  * @returns null if no error, otherwise a string represent the error
  */
 export const validateSignUpData = (formData: SignUpForm) => {
-    const { name, email, password, confirmPassword } = formData
+    const { name, email, password, confirmPassword, phone } = formData
 
     if (!name || !email || !password || !confirmPassword)
         return 'All field (name, email, password, confirmPassword) is required'
 
     // if (containEmptyField(formData)) return 'Contains empty field'
+    if (phone && !validatePhoneNumber(phone)) return 'Phone number is not correct'
 
     if (!validatePassword(password))
         return 'Password need to be at least 8 characters, including one letter and one number'

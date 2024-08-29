@@ -13,7 +13,20 @@ export const createUser: Controller = async (req, res, next) => {
         if (validationError) throw new ApiError(validationError, 400)
 
         const user = await UserService.createUser(body)
-        const response: ApiResponse = { success: true, message: 'User created successfully', data: { user } }
+
+        const { accessToken, refreshToken } = await UserService.logInUser(body)
+
+        res.cookie('refresh_token', refreshToken, {
+            httpOnly: true,
+            maxAge: 60 * 60 * 24 * 1000 // 1 day in milliseconds
+            // secure: process.env.NODE_ENV === 'production'
+        })
+
+        const response: ApiResponse = {
+            success: true,
+            message: 'User created successfully',
+            data: { accessToken, user }
+        }
         res.status(201).json(response)
     } catch (error) {
         handleError(error, next)
@@ -100,6 +113,20 @@ export const refreshAccessToken: Controller = async (req, res, next) => {
             message: 'Access token refreshed successfully',
             data: { newAccessToken }
         }
+        res.status(200).json(response)
+    } catch (error) {
+        handleError(error, next)
+    }
+}
+
+export const logOutUser: Controller = async (req, res, next) => {
+    try {
+        res.clearCookie('refresh_token', {
+            httpOnly: true,
+            // secure: process.env.NODE_ENV === 'production', // Use secure in production
+            sameSite: 'strict' // Protect against CSRF
+        })
+        const response: ApiResponse = { success: true, message: 'Log out user succesfully' }
         res.status(200).json(response)
     } catch (error) {
         handleError(error, next)

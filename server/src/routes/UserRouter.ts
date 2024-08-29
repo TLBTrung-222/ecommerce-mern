@@ -47,6 +47,8 @@ UserRouter.post('/auth/sign-up', UserController.createUser)
  */
 UserRouter.post('/auth/sign-in', UserController.logInUser)
 
+UserRouter.post('/auth/log-out', UserController.logOutUser)
+
 /**
  * @swagger
  * /user/refresh-token:
