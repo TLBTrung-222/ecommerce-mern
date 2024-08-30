@@ -10,7 +10,7 @@ import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
 
 function HomePage() {
-    const items = ["TV", "Tu lanh", "Laptop", "TV", "Tu lanh", "Laptop"];
+    const items = ["TV", "Tu lanh", "Laptop"];
     const handleClick = () => {
         console.info("You clicked the Chip.");
     };
