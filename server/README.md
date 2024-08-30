@@ -13,6 +13,7 @@
 -   JWT: stored `refreshToken` on cookit with httpOnly to prevent XSS attack (accessible via JS code), stored `accessToken` on `localStorage` for easy to retrieve and if it stealed, no much worry  
     Drawback: Storing `refreshToken` in cookie mean client send it along with every request to resrouce server => CSRF attack
     Storing any token in `localStorage` will make it vurnarable to XSS (cross-site scripting) attack
+-   Because this app will store user's image in base64, if the image is large, express will throw error `request entity too large`. To prevent it, please increase the limit of bodyParser and urlencoded middlewares as [here](https://stackoverflow.com/questions/19917401/error-request-entity-too-large)
 
 ## Todo
 
