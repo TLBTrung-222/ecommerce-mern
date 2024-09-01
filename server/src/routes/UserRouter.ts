@@ -3,6 +3,7 @@ import * as UserController from '../controllers/UserController'
 import { adminAuth, userAuth } from '../middlewares/authMiddleware'
 const UserRouter = Router()
 
+//---------------------------------------- Auth routes ------------------------------------------------------------
 // TODO: Update swagger
 //---------------------------------------- Auth routes ------------------------------------------------------------
 /**
@@ -74,42 +75,6 @@ UserRouter.post('/auth/log-out', UserController.logOutUser)
 UserRouter.post('/auth/refresh-token', UserController.refreshAccessToken)
 
 //---------------------------------------- Resource routes ------------------------------------------------------------
-/**
- * @swagger
- * /user/get-all:
- *   get:
- *     summary: Retrieve all non-admin users
- *     description: Retrieves a list of all non-admin users. This route requires authentication.
- *     tags:
- *       - User
- *     security:
- *       - BearerAuth: []
- *     responses:
- *       200:
- *         description: A list of users retrieved successfully
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 users:
- *                   type: array
- *                   items:
- *                     $ref: '#/components/schemas/User'
- *       401:
- *         description: Unauthorized - User is not authenticated
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Error'
- *       500:
- *         description: Internal server error
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Error'
- */
-UserRouter.get('/', adminAuth, UserController.getAllUser)
 
 /**
  * @swagger
@@ -181,6 +146,45 @@ UserRouter.get('/:id', userAuth, UserController.getDetail)
  *               $ref: '#/components/schemas/Error'
  */
 UserRouter.put('/:id', userAuth, UserController.updateUser)
+
+//---------------------------------------- Admin only routes ------------------------------------------------------------
+
+/**
+ * @swagger
+ * /user/get-all:
+ *   get:
+ *     summary: Retrieve all non-admin users
+ *     description: Retrieves a list of all non-admin users. This route requires authentication.
+ *     tags:
+ *       - User
+ *     security:
+ *       - BearerAuth: []
+ *     responses:
+ *       200:
+ *         description: A list of users retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 users:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/User'
+ *       401:
+ *         description: Unauthorized - User is not authenticated
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
+UserRouter.get('/', adminAuth, UserController.getAllUser)
 
 /**
  * @swagger

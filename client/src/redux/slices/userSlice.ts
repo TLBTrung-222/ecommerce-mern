@@ -27,19 +27,19 @@ export const userSlice = createSlice({
                 address = '',
                 phone = '',
                 avatar = '',
-                isAdmin,
+                is_admin,
                 city = ''
             }: UserActionPayload = action.payload
             // only update if the field have value
-            state.id = id ? id : state.id
-            state.name = name ? name : state.name
-            state.email = email ? email : state.email
-            state.address = address ? address : state.address
-            state.phone = phone ? phone : state.phone
-            state.avatar = avatar ? avatar : state.avatar
-            state.access_token = access_token ? access_token : state.access_token
-            state.isAdmin = isAdmin ? isAdmin : state.isAdmin
-            state.city = city ? city : state.city
+            state.id = id ?? state.id
+            state.name = name || state.name
+            state.email = email || state.email
+            state.address = address || state.address
+            state.phone = phone || state.phone
+            state.avatar = avatar || state.avatar
+            state.access_token = access_token || state.access_token
+            state.isAdmin = is_admin ?? state.isAdmin
+            state.city = city || state.city
         },
         clearUser: (state) => {
             state.name = ''

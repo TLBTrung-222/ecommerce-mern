@@ -5,44 +5,52 @@ import Box from '@mui/material/Box'
 import { CssBaseline } from '@mui/material'
 import React from 'react'
 import * as UserService from '~/services/UserService'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { updateUser } from './redux/slices/userSlice'
+import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute'
+import { RootState } from './redux/store'
 
 const App = () => {
     const dispatch = useDispatch()
+    const user = useSelector((state: RootState) => state.user)
+    const [isLoading, setIsLoading] = React.useState(true)
 
-    // Fetch user data on mount
     React.useEffect(() => {
         const fetchUserData = async () => {
             try {
-                // get infor from client's accessToken
                 let accessToken = UserService.getAccessToken()
-                if (!accessToken) return
+                if (!accessToken) {
+                    setIsLoading(false)
+                    return
+                }
 
                 const decoded = UserService.decodeAccessToken(accessToken)
-                if (!decoded) return
+                if (!decoded) {
+                    setIsLoading(false)
+                    return
+                }
 
-                // make sure it's not expired, if it's expired => refresh token
                 const currentTime = Math.floor(Date.now() / 1000)
                 if (currentTime >= decoded.exp) {
                     const newAccessToken = await handleTokenRefresh()
                     if (newAccessToken) {
-                        accessToken = newAccessToken // Update accessToken with the new token
+                        accessToken = newAccessToken
                     } else {
-                        // new access token is null => refresh token is expired,
-                        // TODO: prompt user to log in again
+                        setIsLoading(false)
                         return
                     }
                 }
+
                 await fetchAndUpdateUser(decoded.id, accessToken as string)
             } catch (error) {
                 console.error('Authentication failed:', error)
                 UserService.clearAccessToken()
+            } finally {
+                setIsLoading(false)
             }
         }
 
         fetchUserData()
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [dispatch])
 
     const handleTokenRefresh = async () => {
@@ -60,7 +68,7 @@ const App = () => {
         return null // Return null if token refresh fails
     }
 
-    const fetchAndUpdateUser = async (userId: number, accessToken: string) => {
+    const fetchAndUpdateUser = async (userId: string, accessToken: string) => {
         try {
             const response = await UserService.getUserDetail(userId, accessToken)
             const userDetail = response.data?.user
@@ -70,6 +78,10 @@ const App = () => {
         } catch (error) {
             console.error('Failed to fetch user details:', error)
         }
+    }
+
+    if (isLoading) {
+        return <div>Loading...</div> // Or a more sophisticated loading component
     }
 
     return (
@@ -82,10 +94,16 @@ const App = () => {
                                 key={route.path}
                                 path={route.path}
                                 element={
-                                    <>
-                                        {route.isShowHeader && <HeaderComponent />}
-                                        <route.page />
-                                    </>
+                                    <ProtectedRoute
+                                        element={
+                                            <>
+                                                {route.isShowHeader && <HeaderComponent />}
+                                                <route.page />
+                                            </>
+                                        }
+                                        isAdminRoute={route.isAdmin}
+                                        isAdminUser={user.isAdmin}
+                                    />
                                 }
                             />
                         ))}

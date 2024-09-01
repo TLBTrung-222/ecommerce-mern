@@ -1,5 +1,5 @@
 export interface IPayload {
-    id: number
+    id: string
     isAdmin: boolean
     iat: number
     exp: number

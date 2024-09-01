@@ -62,7 +62,6 @@ const UserProfile = () => {
             address: formData.get('address') as string,
             avatar: avatarBase64 // Include the avatar base64 string from state
         }
-        console.log('avatarBase64: ', avatarBase64)
 
         setErrorMessage(null)
         updateProfileMutation.mutate(profileData)
@@ -106,7 +105,7 @@ const UserProfile = () => {
                                 tabIndex={-1}
                                 startIcon={<CloudUploadIcon />}
                             >
-                                Upload files
+                                Upload avatar
                                 <VisuallyHiddenInput type="file" onChange={handleAvatarUpload} />
                             </Button>
                             {avatarBase64 && <Avatar sizes="lg" alt="image" src={avatarBase64} />}

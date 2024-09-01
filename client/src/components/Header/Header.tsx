@@ -1,3 +1,4 @@
+import React from 'react'
 import Typography from '@mui/material/Typography'
 import Box from '@mui/system/Box'
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart'
@@ -5,16 +6,14 @@ import InputSearch from '../InputSearch/InputSearch'
 import Badge from '@mui/material/Badge'
 import { Link, useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
-import Popover from '@mui/material/Popover'
 import Button from '@mui/material/Button'
-import * as React from 'react'
 import * as UserService from '~/services/UserService'
-import { Avatar, List, ListItem, ListItemText } from '@mui/material'
+import { Avatar, Menu, MenuItem } from '@mui/material'
 import { clearUser } from '~/redux/slices/userSlice'
 import { RootState } from '~/redux/store'
 
 function Header() {
-    const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(null)
+    const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null)
     const navigate = useNavigate()
     const dispatch = useDispatch()
 
@@ -31,6 +30,7 @@ function Header() {
     const handleLogOut = async () => {
         await UserService.logOutUser()
         dispatch(clearUser())
+        handleClose()
     }
 
     return (
@@ -57,29 +57,41 @@ function Header() {
                     <Box>
                         {user.name ? (
                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                                <Box>
-                                    <Button sx={{ color: 'white' }} onClick={handleClick}>
-                                        <Typography>{user.name}</Typography>
-                                    </Button>
-                                    <Popover
-                                        open={Boolean(anchorEl)}
-                                        anchorEl={anchorEl}
-                                        onClose={handleClose}
-                                        anchorOrigin={{
-                                            vertical: 'bottom',
-                                            horizontal: 'left'
+                                <Button
+                                    sx={{ color: 'white' }}
+                                    onClick={handleClick}
+                                    aria-controls="user-menu"
+                                    aria-haspopup="true"
+                                >
+                                    <Typography>{user.name}</Typography>
+                                </Button>
+                                <Menu
+                                    id="user-menu"
+                                    anchorEl={anchorEl}
+                                    keepMounted
+                                    open={Boolean(anchorEl)}
+                                    onClose={handleClose}
+                                >
+                                    <MenuItem
+                                        onClick={() => {
+                                            navigate(`/profiles/${user.id}`)
+                                            handleClose()
                                         }}
                                     >
-                                        <List>
-                                            <ListItem button onClick={() => navigate(`/profiles/${user.id}`)}>
-                                                <ListItemText primary="Thông tin tài khoản" />
-                                            </ListItem>
-                                            <ListItem button onClick={handleLogOut}>
-                                                <ListItemText primary="Đăng xuất" />
-                                            </ListItem>
-                                        </List>
-                                    </Popover>
-                                </Box>
+                                        Thông tin tài khoản
+                                    </MenuItem>
+                                    {user.isAdmin && (
+                                        <MenuItem
+                                            onClick={() => {
+                                                navigate('/admin')
+                                                handleClose()
+                                            }}
+                                        >
+                                            Quản lí hệ thống
+                                        </MenuItem>
+                                    )}
+                                    <MenuItem onClick={handleLogOut}>Đăng xuất</MenuItem>
+                                </Menu>
                             </Box>
                         ) : (
                             <>
@@ -93,12 +105,11 @@ function Header() {
                 </Box>
             </Box>
 
-            {/* Card */}
+            {/* Cart */}
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                 <Badge badgeContent={4} color="secondary">
                     <ShoppingCartIcon />
                 </Badge>
-
                 <Typography>Giỏ hàng</Typography>
             </Box>
         </Box>

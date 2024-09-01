@@ -5,7 +5,7 @@ export interface UserActionPayload {
     avatar: string
     access_token: string
     id: number
-    isAdmin: boolean
+    is_admin: boolean
     address: string
     city: string
 }
