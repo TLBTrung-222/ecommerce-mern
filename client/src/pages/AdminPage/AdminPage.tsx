@@ -1,69 +1,93 @@
-import * as React from 'react'
-import ShoppingCartIcon from '@mui/icons-material/ShoppingCart'
-import { AppProvider } from '@toolpad/core/AppProvider'
-import { DashboardLayout } from '@toolpad/core/DashboardLayout'
-import type { Navigation, Router } from '@toolpad/core'
-import AdminUser from '~/components/AdminUser/AdminUser'
-import AdminProduct from '~/components/AdminProduct/AdminProduct'
-import AdminOrder from '~/components/AdminOrder/AdminOrder'
-import ManageAccountsIcon from '@mui/icons-material/ManageAccounts'
-import InventoryIcon from '@mui/icons-material/Inventory'
+/* eslint-disable */
+import {
+    Box,
+    Divider,
+    Drawer,
+    List,
+    ListItem,
+    ListItemButton,
+    ListItemIcon,
+    ListItemText,
+    Toolbar,
+    Typography,
+} from "@mui/material";
+import {
+    People as PeopleIcon,
+    ShoppingCart as ShoppingCartIcon,
+    CardTravelOutlined,
+} from "@mui/icons-material";
+import React from "react";
+import AdminUser from "~/components/AdminUser/AdminUser";
+import AdminProduct from "~/components/AdminProduct/AdminProduct";
+import AdminOrder from "~/components/AdminOrder/AdminOrder";
 
-const NAVIGATION: Navigation = [
-    {
-        segment: 'users', // define the navigation URL, used for 'pathname' in PageContent
-        title: 'Người dùng',
-        icon: <ManageAccountsIcon />
-    },
-    {
-        segment: 'products',
-        title: 'Sản phẩm',
-        icon: <InventoryIcon />
-    },
-    {
-        segment: 'orders',
-        title: 'Đơn hàng',
-        icon: <ShoppingCartIcon />
-    }
-]
+interface PageItems {
+    pageName: string;
+    id: string;
+    icon: React.ReactNode;
+}
 
 export default function AdminPage() {
-    const [pathname, setPathname] = React.useState('/dashboard')
+    const [selectedPageId, setSelectedPageId] = React.useState<string>("users");
 
-    const router = React.useMemo<Router>(() => {
-        return {
-            pathname,
-            searchParams: new URLSearchParams(),
-            navigate: (path) => setPathname(String(path))
-        }
-    }, [pathname])
+    const pages: PageItems[] = [
+        { pageName: "Người dùng", id: "users", icon: <PeopleIcon /> },
+        { pageName: "Sản phẩm", id: "products", icon: <ShoppingCartIcon /> },
+        { pageName: "Đơn hàng", id: "orders", icon: <CardTravelOutlined /> },
+    ];
 
-    // base on path name, choose page to render
-    const pageToRender = (page: string) => {
-        switch (page) {
-            case '/users':
-                return <AdminUser />
+    const handleOnClick = (pageId: string) => {
+        setSelectedPageId(pageId);
+    };
 
-            case '/products':
-                return <AdminProduct />
-
-            case '/orders':
-                return <AdminOrder />
+    const renderPage = (pageId: string) => {
+        switch (pageId) {
+            case "users":
+                return <AdminUser />;
+                break;
+            case "products":
+                return <AdminProduct />;
+            case "orders":
+                return <AdminOrder />;
             default:
-                return <></>
+                break;
         }
-    }
+    };
 
     return (
-        <AppProvider
-            navigation={NAVIGATION}
-            branding={{
-                logo: <img src="https://mui.com/static/logo.png" alt="MUI logo" />,
-                title: 'MUI'
-            }}
-            router={router}
-        >
-            <DashboardLayout>{pageToRender(pathname)}</DashboardLayout>
-        </AppProvider>
-    )
+        <Box sx={{ display: "flex" }}>
+            <Drawer
+                variant="permanent"
+                sx={{
+                    width: 240,
+                    flexShrink: 0,
+                    [`& .MuiDrawer-paper`]: {
+                        width: 240,
+                        boxSizing: "border-box",
+                    },
+                }}
+            >
+                <Toolbar />
+                <Divider />
+                <Box>
+                    <List>
+                        {pages.map((pageItem) => (
+                            <ListItem key={pageItem.id}>
+                                <ListItemButton
+                                    onClick={() => {
+                                        handleOnClick(pageItem.id);
+                                    }}
+                                >
+                                    <ListItemIcon>{pageItem.icon}</ListItemIcon>
+                                    <ListItemText primary={pageItem.pageName} />
+                                </ListItemButton>
+                            </ListItem>
+                        ))}
+                    </List>
+                </Box>
+            </Drawer>
+
+            <Box>{renderPage(selectedPageId)}</Box>
+        </Box>
+    );
 }

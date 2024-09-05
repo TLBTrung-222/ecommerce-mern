@@ -1,117 +1,132 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
-import { routes } from './routes'
-import HeaderComponent from './components/Header/Header'
-import Box from '@mui/material/Box'
-import { CssBaseline } from '@mui/material'
-import React from 'react'
-import * as UserService from '~/services/UserService'
-import { useDispatch, useSelector } from 'react-redux'
-import { updateUser } from './redux/slices/userSlice'
-import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute'
-import { RootState } from './redux/store'
+import { useEffect, useState } from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import CssBaseline from "@mui/material/CssBaseline";
+import Box from "@mui/material/Box";
+import CircularProgress from "@mui/material/CircularProgress";
+
+import { routes } from "./routes";
+import HeaderComponent from "./components/Header/Header";
+import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute";
+import * as UserService from "~/services/UserService";
+import { updateUser } from "./redux/slices/userSlice";
+import { RootState } from "./redux/store";
 
 const App = () => {
-    const dispatch = useDispatch()
-    const user = useSelector((state: RootState) => state.user)
-    const [isLoading, setIsLoading] = React.useState(true)
+    const dispatch = useDispatch();
+    const user = useSelector((state: RootState) => state.user);
+    const [isLoading, setIsLoading] = useState(true);
 
-    React.useEffect(() => {
+    useEffect(() => {
         const fetchUserData = async () => {
             try {
-                let accessToken = UserService.getAccessToken()
+                let accessToken = UserService.getAccessToken();
                 if (!accessToken) {
-                    setIsLoading(false)
-                    return
+                    setIsLoading(false);
+                    return;
                 }
 
-                const decoded = UserService.decodeAccessToken(accessToken)
+                const decoded = UserService.decodeAccessToken(accessToken);
                 if (!decoded) {
-                    setIsLoading(false)
-                    return
+                    setIsLoading(false);
+                    return;
                 }
 
-                const currentTime = Math.floor(Date.now() / 1000)
+                const currentTime = Math.floor(Date.now() / 1000);
                 if (currentTime >= decoded.exp) {
-                    const newAccessToken = await handleTokenRefresh()
+                    const newAccessToken = await handleTokenRefresh();
                     if (newAccessToken) {
-                        accessToken = newAccessToken
+                        accessToken = newAccessToken;
                     } else {
-                        setIsLoading(false)
-                        return
+                        setIsLoading(false);
+                        return;
                     }
                 }
 
-                await fetchAndUpdateUser(decoded.id, accessToken as string)
+                await fetchAndUpdateUser(decoded.id, accessToken as string);
             } catch (error) {
-                console.error('Authentication failed:', error)
-                UserService.clearAccessToken()
+                console.error("Authentication failed:", error);
+                UserService.clearAccessToken();
             } finally {
-                setIsLoading(false)
+                setIsLoading(false);
             }
-        }
+        };
 
-        fetchUserData()
-    }, [dispatch])
+        fetchUserData();
+    }, [dispatch]);
 
     const handleTokenRefresh = async () => {
         try {
-            const response = await UserService.refreshAccessToken()
-            const newAccessToken = response.data?.newAccessToken
+            const response = await UserService.refreshAccessToken();
+            const newAccessToken = response.data?.newAccessToken;
             if (newAccessToken) {
-                localStorage.setItem('accessToken', newAccessToken)
-                console.log('Access token refreshed successfully')
-                return newAccessToken // Return the new access token
+                localStorage.setItem("accessToken", newAccessToken);
+                console.log("Access token refreshed successfully");
+                return newAccessToken;
             }
         } catch (error) {
-            console.error('Failed to refresh access token:', error)
+            console.error("Failed to refresh access token:", error);
         }
-        return null // Return null if token refresh fails
-    }
+        return null;
+    };
 
     const fetchAndUpdateUser = async (userId: string, accessToken: string) => {
         try {
-            const response = await UserService.getUserDetail(userId, accessToken)
-            const userDetail = response.data?.user
+            const response = await UserService.getUserDetail(
+                userId,
+                accessToken
+            );
+            const userDetail = response.data?.user;
             if (userDetail) {
-                dispatch(updateUser(userDetail))
+                dispatch(updateUser(userDetail));
             }
         } catch (error) {
-            console.error('Failed to fetch user details:', error)
+            console.error("Failed to fetch user details:", error);
         }
-    }
+    };
 
     if (isLoading) {
-        return <div>Loading...</div> // Or a more sophisticated loading component
+        return (
+            <Box
+                display="flex"
+                justifyContent="center"
+                alignItems="center"
+                height="100vh"
+            >
+                <CircularProgress />
+            </Box>
+        );
     }
 
     return (
-        <CssBaseline>
-            <Box className="App">
-                <Router>
-                    <Routes>
-                        {routes.map((route) => (
-                            <Route
-                                key={route.path}
-                                path={route.path}
-                                element={
-                                    <ProtectedRoute
-                                        element={
-                                            <>
-                                                {route.isShowHeader && <HeaderComponent />}
-                                                <route.page />
-                                            </>
-                                        }
-                                        isAdminRoute={route.isAdmin}
-                                        isAdminUser={user.isAdmin}
-                                    />
-                                }
-                            />
-                        ))}
-                    </Routes>
-                </Router>
-            </Box>
-        </CssBaseline>
-    )
-}
+        <Box>
+            <CssBaseline />
+            <Router>
+                <Routes>
+                    {routes.map((route) => (
+                        <Route
+                            key={route.path}
+                            path={route.path}
+                            element={
+                                <ProtectedRoute
+                                    isAdminRoute={route.isAdmin}
+                                    isAdminUser={user.isAdmin}
+                                    element={
+                                        <>
+                                            {route.isShowHeader && (
+                                                <HeaderComponent />
+                                            )}
+                                            <route.page />
+                                        </>
+                                    }
+                                />
+                            }
+                        />
+                    ))}
+                </Routes>
+            </Router>
+        </Box>
+    );
+};
 
-export default App
+export default App;
