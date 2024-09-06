@@ -20,6 +20,19 @@ export const getAllUsers = async (): Promise<ApiResponse<AllUser>> => {
     return handleApiResponse(response);
 };
 
+export const deleteUser = async (
+    userId: number
+): Promise<ApiResponse<UserData>> => {
+    const accessToken = UserSerivce.getAccessToken();
+    const response = await fetch(`${adminEndpoint}/${userId.toString()}`, {
+        method: "DELETE",
+        headers: {
+            Authorization: `Bearer ${accessToken}`,
+        },
+    });
+    return handleApiResponse(response);
+};
+
 // --- Helper ------------
 
 const handleApiResponse = async (response: Response): Promise<ApiResponse> => {
