@@ -2,7 +2,7 @@ import express, { Application } from 'express'
 import cookieParser from 'cookie-parser'
 import cors from 'cors'
 
-const allowedOrigins = ['http://localhost:5173', 'https://ecommerce-pern.onrender.com/']
+const allowedOrigins = ['http://localhost:5173', 'https://ecommerce-pern.onrender.com']
 
 /**
  * Configures middleware for the Express application.
