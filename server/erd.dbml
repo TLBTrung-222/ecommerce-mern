@@ -1,0 +1,69 @@
+// Users Table
+Table users {
+  id SERIAL [pk]
+  name VARCHAR(255)
+  email VARCHAR(255) [unique, not null]
+  pw_hash VARCHAR(255) [not null]
+  pw_salt VARCHAR(255) [not null]
+  is_admin BOOLEAN [not null, default: false]
+  phone BIGINT
+  address VARCHAR(255)
+  avatar VARCHAR(255)
+  city VARCHAR(255)
+  created_at TIMESTAMP
+  updated_at TIMESTAMP
+}
+
+// Products Table
+Table products {
+  id SERIAL [pk]
+  name VARCHAR(255) [unique, not null]
+  image VARCHAR(255) [not null]
+  type VARCHAR(255) [not null]
+  price DECIMAL(10, 2) [not null]
+  count_in_stock INTEGER [not null]
+  rating DECIMAL(3, 2) [not null]
+  description TEXT
+  discount DECIMAL(5, 2)
+  selled INTEGER
+  created_at TIMESTAMP
+  updated_at TIMESTAMP
+}
+
+// Orders Table
+Table orders {
+  id SERIAL [pk]
+  user_id INTEGER [ref: > users.id]
+  payment_method VARCHAR(255) [not null]
+  items_price DECIMAL(10, 2) [not null]
+  shipping_price DECIMAL(10, 2) [not null]
+  total_price DECIMAL(10, 2) [not null]
+  is_paid BOOLEAN [default: false]
+  paid_at TIMESTAMP
+  is_delivered BOOLEAN [default: false]
+  delivered_at TIMESTAMP
+  created_at TIMESTAMP
+  updated_at TIMESTAMP
+}
+
+// Order Items Table
+Table order_items {
+  id SERIAL [pk]
+  order_id INTEGER [ref: > orders.id]
+  product_id INTEGER [ref: > products.id]
+  name VARCHAR(255) [not null]
+  amount INTEGER [not null]
+  image VARCHAR(255) [not null]
+  price DECIMAL(10, 2) [not null]
+  discount DECIMAL(5, 2)
+}
+
+// Shipping Addresses Table
+Table shipping_addresses {
+  id SERIAL [pk]
+  order_id INTEGER [ref: > orders.id]
+  full_name VARCHAR(255) [not null]
+  address VARCHAR(255) [not null]
+  city VARCHAR(255) [not null]
+  phone BIGINT [not null]
+}
