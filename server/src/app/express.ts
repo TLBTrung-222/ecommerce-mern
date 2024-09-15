@@ -2,7 +2,7 @@ import express, { Application } from 'express'
 import cookieParser from 'cookie-parser'
 import cors from 'cors'
 
-const allowedOrigins = ['http://localhost:5173', 'https://ecommerce-mern-khaki.vercel.app/']
+const allowedOrigins = ['http://localhost:5173', 'https://ecommerce-mern-khaki.vercel.app']
 
 /**
  * Configures middleware for the Express application.
@@ -14,6 +14,7 @@ const expressLoader = (app: Application) => {
     app.use(
         cors({
             origin: function (origin, callback) {
+                console.log('Origin:', origin) // Log the origin of each request
                 // Allow requests with no origin (like mobile apps or curl requests)
                 if (!origin) return callback(null, true)
                 if (allowedOrigins.indexOf(origin) === -1) {
