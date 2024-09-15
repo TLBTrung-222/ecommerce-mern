@@ -1,30 +1,32 @@
-import { ApiResponse } from '~/types'
+import { ApiResponse } from "~/types";
 
-const productEndpoint = `${import.meta.env.VITE_API_URL}/products`
+const productEndpoint = `${import.meta.env.VITE_API_URL}/products`;
 
 export const fetchAllProduct = async () => {
-    const response = await fetch(`${productEndpoint}/`, {
-        method: 'GET'
-    })
+    const response = await fetch(`${productEndpoint}/?limit=30`, {
+        method: "GET",
+    });
 
-    return handleApiResponse(response)
-}
+    return handleApiResponse(response);
+};
 
 export const fetchAllTypes = async () => {
     const response = await fetch(`${productEndpoint}/types`, {
-        method: 'GET'
-    })
+        method: "GET",
+    });
 
-    return handleApiResponse(response)
-}
+    return handleApiResponse(response);
+};
 
 // ------------------ helpers -------------------------------------
 
 const handleApiResponse = async (response: Response): Promise<ApiResponse> => {
-    const responseBody = await response.json()
+    const responseBody = await response.json();
     if (!response.ok) {
-        throw new Error(responseBody.error || 'Unknown error occurred while fetching data')
+        throw new Error(
+            responseBody.error || "Unknown error occurred while fetching data"
+        );
     }
 
-    return responseBody
-}
+    return responseBody;
+};
