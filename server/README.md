@@ -2,7 +2,7 @@
 
 -   When update new entity, the update form sent from client can contains properties that not belong to entity's properties, and
     we will just get the necessary properties and ignore others
--   Controller layer handle req/res, validate user input. It will delegate other business logic to Service layer. Controller do the heavy thing, mainly interact with req/res
+-   Controller layer handle req/res. It will delegate other business logic to Service layer like validate user input. Service do the heavy thing
 -   Service layer execute complex business logic, interact with db and give the result to Controller layer (also throw error if exists to Controller)
 -   I choose not to use try-catch block in Service layer for Single Responsibility Principle, the error get from Service will be
     buble up to be catched by Controller
@@ -14,6 +14,7 @@
     Drawback: Storing `refreshToken` in cookie mean client send it along with every request to resrouce server => CSRF attack
     Storing any token in `localStorage` will make it vurnarable to XSS (cross-site scripting) attack
 -   Because this app will store user's image in base64, if the image is large, express will throw error `request entity too large`. To prevent it, please increase the limit of bodyParser and urlencoded middlewares as [here](https://stackoverflow.com/questions/19917401/error-request-entity-too-large)
+-   For simplicity, we will get items_price of each order by front-end. Note that in production, DO NOT trust user's request. We may need to calculate items_price on backend
 
 ## Todo
 
@@ -25,7 +26,7 @@
 5. Send jwt to user when register done
 6. Store refresh token in database (Redis cache, ...)
 7. Move auth routes from UserRouter to a seperate AuthRouter
-8. Move all types to index.ts
+8. Move all types to index.ts ✅
 
 ## Learn
 
@@ -45,6 +46,10 @@ Main reasons to use refresh token:
 
 6. Cookie: Browser's cookie will attach the cookie it received from server (if exist) in subsequent requests to the same domain.
 
+7. Build phase: When deploying to a Paas, setting NODE_ENV env variable will trigger npm to not install dev dependencies (which is required for tsc to build). We can bypass this by adding `npm install --include=dev`
+
+8. To deploy my postgresql to render, we need to export the db using `pg_dump`, then connect to remote postgresql on render to execute the exported sql file.
+
 ## Issue
 
 If postgresql is not working, read the log file on /Library/PostgreSQL/16/data/log, also log file from pgAdmin. After that follow these steps:
@@ -52,7 +57,7 @@ If postgresql is not working, read the log file on /Library/PostgreSQL/16/data/l
 1. Check if postgres server is running:
 
 ```shell
-sudo -u postgres /Library/PostgreSQL/16/bin/pg_ctl status -D /Library/PostgreSQL/16/data
+dscl . -list /Users UniqueID | grep -v '^_'
 ```
 
 2. If it's not running, Start PostgreSQL service
@@ -73,5 +78,5 @@ sudo lsof -i :5432
 sudo chmod 700 /Library/PostgreSQL/16/data
 ```
 
-700: (user read/write/execute only)
+700: (user read/write/execute only) for owner of this dir (postgres)
 Then try to start the postgresql service again, it should works
